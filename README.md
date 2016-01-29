@@ -1,5 +1,5 @@
 # ![](doc/icon.png) lxy [![GoDoc](https://godoc.org/github.com/cb01/lxy?status.svg)](https://godoc.org/github.com/cb01/lxy) 
-
+[![wercker status](https://app.wercker.com/status/c427b44ec31d9af19c49cfb664ba3490/m "wercker status")](https://app.wercker.com/project/bykey/c427b44ec31d9af19c49cfb664ba3490)
 
 A command-line tool for application of contact genomic data to the problems of genome scaffolding, phasing, and clustering.
 
