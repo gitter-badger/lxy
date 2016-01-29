@@ -1,0 +1,26 @@
+box: google/golang:latest
+# Defining the dev pipeline
+dev:
+  steps:
+    - internal/watch:
+        code: |-
+          go get github.com/constabulary/gb/...
+          gb build all
+          gb test all
+        reload: true
+
+build:
+
+  steps:
+
+    - script:
+        name: setup
+        code: go get github.com/constabulary/gb/...
+
+    - script:
+        name: gb test
+        code: gb test all
+
+    - script:
+        name: gb build
+        code: gb build all
