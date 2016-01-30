@@ -1,0 +1,23 @@
+{
+   "kind": "Service",
+   "apiVersion": "v1alpha",
+   "metadata": {
+      "name": "lxy",
+      "labels": {
+         "name": "lxy"
+      }
+   },
+   "spec":{
+      "createExternalLoadBalancer": true,
+      "ports": [
+         {
+           "port": 5000,
+           "targetPort": "http-server",
+           "protocol": "TCP"
+         }
+      ],
+      "selector":{
+         "name":"lxy"
+      }
+   }
+}

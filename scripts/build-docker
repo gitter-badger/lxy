@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Before running, must start docker machine
+# docker-machine restart default && eval "$(docker-machine env default)"
+
+# PROJDIR=/Users/cb/code/src/github.com/cb01/lxy
+
+QUAYUSERNAME=cb01
+
+IMAGEDIR=$LXYDIR/build/image-docker
+mkdir -p ${IMAGEDIR}
+
+cd $LXYDIR
+tar -czf $IMAGEDIR/src.tgz src
+tar -czf $IMAGEDIR/vendor.tgz vendor
+
+cat <<DF > ${IMAGEDIR}/Dockerfile
+FROM golang:latest
+WORKDIR /app
+
+COPY src.tgz /app/
+COPY vendor.tgz /app/
+
+RUN tar -xzvf src.tgz
+RUN tar -xzvf vendor.tgz
+
+RUN go get github.com/constabulary/gb/...
+RUN gb build all
+DF
+
+docker build -t quay.io/${QUAYUSERNAME}/lxy:${1} ${IMAGEDIR}
+

@@ -24,3 +24,53 @@ build:
     - script:
         name: gb build
         code: gb build all
+
+    - script: # Still not sure about this bit
+        name: go build
+        code: CGO_ENABLED=0 go build -a -ldflags '-s' -installsuffix cgo -o bin/lxy lxy
+
+    - script:
+        name: create lxy-controller.json
+        code: cluster/create_lxy-controller.json.sh
+
+    - script:
+        name: copy binary
+        code: cp bin/lxy cluster/lxy-service.json cluster/lxy-controller.json "$WERCKER_OUTPUT_DIR"
+
+deploy:
+  box: google/golang
+  steps:
+   # Use the scratch step to build a container from scratch based on the files present
+  - internal/docker-scratch-push:
+      username: $QUAY_USERNAME
+      password: $QUAY_PASSWORD
+      cmd: ./lxy serve
+      tag: $WERCKER_GIT_COMMIT
+      ports: "5000"
+      repository: quay.io/chris_w_beitel/lxy
+      registry: https://quay.io
+
+  initialize:
+  - kubectl:
+      server: $KUBERNETES_MASTER
+      username: $KUBERNETES_USERNAME
+      password: $KUBERNETES_PASSWORD
+      insecure-skip-tls-verify: true
+      command: create -f lxy-controller.json
+
+  - kubectl:
+      server: $KUBERNETES_MASTER
+      username: $KUBERNETES_USERNAME
+      password: $KUBERNETES_PASSWORD
+      insecure-skip-tls-verify: true
+      command: create -f lxy-service.json
+
+  rolling-update:
+  - kubectl:
+      server: $KUBERNETES_MASTER
+      username: $KUBERNETES_USERNAME
+      password: $KUBERNETES_PASSWORD
+      insecure-skip-tls-verify: true
+      command: rolling-update lxy
+      image: quay.io/chris_w_beitel/lxy:$WERCKER_GIT_COMMIT
+
