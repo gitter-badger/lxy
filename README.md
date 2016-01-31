@@ -1,6 +1,6 @@
-# ![](doc/icon.png) lxy [![GoDoc](https://godoc.org/github.com/cb01/lxy?status.svg)](https://godoc.org/github.com/cb01/lxy) 
+# ![](doc/icon.png) lxy [![GoDoc](https://godoc.org/github.com/cb01/lxy?status.svg)](https://godoc.org/github.com/cb01/lxy) [![Docker Repository on Quay](https://quay.io/repository/chris_w_beitel/lxy/status "Docker Repository on Quay")](https://quay.io/repository/chris_w_beitel/lxy)
 [![wercker status](https://app.wercker.com/status/c427b44ec31d9af19c49cfb664ba3490/m "wercker status")](https://app.wercker.com/project/bykey/c427b44ec31d9af19c49cfb664ba3490)
-[![Docker Repository on Quay](https://quay.io/repository/chris_w_beitel/lxy/status "Docker Repository on Quay")](https://quay.io/repository/chris_w_beitel/lxy)
+
 
 A command-line tool for application of contact genomic data to the problems of genome scaffolding, phasing, and clustering.
 
