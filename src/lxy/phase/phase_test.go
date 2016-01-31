@@ -17,3 +17,13 @@ func TestPhase(t *testing.T) {
 	
 }
 
+func TestEvalPhasing(t *testing.T) {
+
+	phasing := []bool{true, false, true}
+	key := []bool{true, false, true}
+
+	if s, _ := EvalPhasing(phasing, key); s != 1.0 {
+		t.Errorf("phase/eval: failed to correctly score correct phasing as correct")
+	}
+
+}

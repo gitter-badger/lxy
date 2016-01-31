@@ -7,7 +7,7 @@ dev:
           go get github.com/constabulary/gb/...
           gb build all
           gb test all
-        reload: true
+        reload: false
 
 build:
 
@@ -25,13 +25,13 @@ build:
         name: gb build
         code: gb build all
 
-    - script: # Still not sure about this bit
-        name: go build
-        code: CGO_ENABLED=0 go build -a -ldflags '-s' -installsuffix cgo -o bin/lxy lxy
+    #- script: # Still not sure about this bit. Can build static binary with gb?
+    #    name: go build
+    #    code: CGO_ENABLED=0 go build -a -ldflags '-s' -installsuffix cgo -o bin/lxy lxy
 
-    - script:
-        name: create lxy-controller.json
-        code: cluster/create_lxy-controller.json.sh
+    #- script:
+    #    name: create lxy-controller.json
+    #    code: cluster/create_lxy-controller.json.sh
 
     - script:
         name: copy binary

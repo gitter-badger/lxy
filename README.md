@@ -3,7 +3,6 @@
 
 A command-line tool for application of contact genomic data to the problems of genome scaffolding, phasing, and clustering.
 
-
 ## Features
 
 * __Genome Scaffolding__: Scaffolding of genomes is performed, leveraging Hi-C contact genomic sequence data

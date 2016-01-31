@@ -9,13 +9,6 @@ import (
 	"github.com/golang/glog"
 )
 
-/*
-
-pulling NA12878 out of 1kgenome data:
-cut -f1,2,3,4,5,6,7,8,1762 data/GM12878/1kgenome/ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf | head -n 300
-
-*/
-
 func PhaseCommand() cli.Command {
     return cli.Command{
 		Name:  "phase",

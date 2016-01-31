@@ -161,5 +161,135 @@ func VisualizeScaffolding(scaffPath, keyPath, outPath string) {
 
 }
 
+// score determines the quality score for a scaffolding genome solution. Presently,
+// the score sums the Hi-C links between a contig and its neighbors out to 1, 2, 3, 
+// 5, 11, and 20 steps, discounting the more distant steps. This is to enforce the
+// expectation that a scaffolding that is in order relative to one that is out of
+// order will have more Hi-C links to nearby contigs.
+//
+// ISSUE: This is a preliminary implementation of the scoring function. Something
+// that more subtly scores the regional consistency of a scaffolding using Hi-C
+// data, including permitting gaps and using orientation information, is warranted
+// for anything beyond pre-alpha.
+func score(g *GAOrderedIntGenome) float64 {
+
+	// TODO: Obviously a very preliminary scoring function, for prototyping.
+
+	var total float64
+	
+	for i, c := range g.Gene {
+
+		if (i + 1) < (*g.data).Size() {
+			val, _ := (*g.data).Get(c, g.Gene[i+1])
+			total += val
+		}
+		if (i - 1) > 0 {
+			val, _ := (*g.data).Get(c, g.Gene[i-1])
+			total += val
+		}
+		if (i + 2) < (*g.data).Size() {
+			val, _ := (*g.data).Get(c, g.Gene[i+2])
+			total += 0.5*val
+		}
+		if (i - 2) > 0 {
+			val, _ := (*g.data).Get(c, g.Gene[i-2])
+			total += 0.5*val
+		}
+		if (i + 3) < (*g.data).Size() {
+			val, _ := (*g.data).Get(c, g.Gene[i+3])
+			total += 0.33*val
+		}
+		if (i - 3) > 0 {
+			val, _ := (*g.data).Get(c, g.Gene[i-3])
+			total += 0.33*val
+		}
+
+		if (i + 5) < (*g.data).Size() {
+			val, _ := (*g.data).Get(c, g.Gene[i+5])
+			total += 0.2*val
+		}
+		if (i - 5) > 0 {
+			val, _ := (*g.data).Get(c, g.Gene[i-5])
+			total += 0.2*val
+		}
+
+		if (i + 11) < (*g.data).Size() {
+			val, _ := (*g.data).Get(c, g.Gene[i+11])
+			total += 0.1*val
+		}
+		if (i - 11) > 0 {
+			val, _ := (*g.data).Get(c, g.Gene[i-11])
+			total += 0.1*val
+		}
+
+		if (i + 20) < (*g.data).Size() {
+			val, _ := (*g.data).Get(c, g.Gene[i+20])
+			total += 0.05*val
+		}
+		if (i - 20) > 0 {
+			val, _ := (*g.data).Get(c, g.Gene[i-20])
+			total += 0.05*val
+		}
+
+	}
+	
+	scores++
+
+	return float64(-total)
+
+}
+
+func distScore(d, c1, c2 int) int {
+
+	actualDist := (c1 - c2)
+	if actualDist < 0 { actualDist = -1*actualDist }
+
+	score := d - actualDist
+	if score < 0 {return -1*score}
+	return score
+
+}
+
+// EvalScaffolding evaluates the quality of a scaffolding solution relative to a known
+// correct scaffolding.
+func EvalScaffolding(scaff []string, key []string) (float64, float64, error) {
+
+	// Cache the order of each element in the key
+	keyOrder := map[string]int{}
+	for i, v := range key {
+		keyOrder[v] = i
+	}
+
+	comparisons := 0.0
+	correct := 0.0
+	neighbors := 0.0
+	neighborsCorrect := 0.0
+
+	// For each triplet in the inferred solution, check whether 
+	// that triplet is in the same order in the key.
+	for i, v1 := range scaff {
+		for j, v2 := range scaff {
+			for k, v3 := range scaff {
+				if (i < j) && (k > j) {
+					comparisons += 1
+					if (keyOrder[v1] < keyOrder[v2]) && (keyOrder[v2] < keyOrder[v3]) {
+						correct += 1
+					}
+					if (j == i + 1) && (k == j + 1) {
+						neighbors += 1
+						if (keyOrder[v1] < keyOrder[v2]) && (keyOrder[v2] < keyOrder[v3]) {
+							neighborsCorrect += 1
+						}						
+					}
+				}
+			}
+		}
+	}
+
+	return float64(correct/comparisons), float64(neighborsCorrect/neighbors), nil
+
+}
+
+
 
 

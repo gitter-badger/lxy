@@ -26,15 +26,18 @@ func PostfixPath(path string, tag string) string {
 
 }
 
-func PathExists(path string) {
+// PathExists wraps the os.Stat function to include an error
+func PathExists(path string) error {
 	if _, err := os.Stat(path); err != nil {
-		fmt.Errorf("error: cannot find the specified file path on your system: %s\n", path)
+		return fmt.Errorf("error: cannot find the specified file path on your system: %s\n", path)
 	}
+	return nil
 }
 
-func MkdirForFile(path string){
+// MkdirForFile takes a file path for a file that will be created
+// and creates the directory that is needed for that file.
+func MkdirForFile(path string) {
 	arr := strings.Split(path, "/")
 	pathNew := strings.Join(arr[0:(len(arr)-1)], "/")
 	os.MkdirAll(pathNew, 0777)
-
 }

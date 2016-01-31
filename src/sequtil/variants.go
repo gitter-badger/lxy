@@ -8,8 +8,12 @@ import (
 	"strconv"
 )
 
+// Variants is an object that stores a set of genome sequence 
+// variants indexed according to chromosome name and position.
 type Variants map[string]map[int]variant
 
+// variant is an object that represents a single genome sequence 
+// variant.
 type variant struct {
 	Chrom string // chromosome
 	Pos string // position
@@ -26,6 +30,7 @@ func (v *variant) String() string {
 	return strings.Join([]string{v.Chrom, v.Pos, v.ID, v.Ref, v.Alt, v.Qual, v.Filter, v.Info}, "\t")
 }
 
+// readVariant reads a single VCF line into a variant object
 func readVariant(line string) (variant, error) {
 	arr := strings.Split(line, "\t")
 	if len(arr) < 8 {return variant{}, fmt.Errorf("Variant line does not include the required minimum number of fields.")}
@@ -33,6 +38,7 @@ func readVariant(line string) (variant, error) {
 		arr[4], arr[5], arr[6], arr[7],}, nil
 }
 
+// add adds a single variant to a variant set object
 func (vars *Variants) add(v variant) {
 	chr := v.Chrom
 	pos, _ := strconv.Atoi(v.Pos)

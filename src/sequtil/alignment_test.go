@@ -222,7 +222,7 @@ func TestTabulateVariantLinks(t *testing.T) {
 
 	for k1, v1 := range check {
 		for k2, v2 :=  range v1 {
-			link := l.Get(l.ID(k1), l.ID(k2))
+			link, _ := l.Get(l.ID(k1), l.ID(k2))
 			if link != v2 {
 				t.Errorf("test error: incorrect inference of variant phase")
 			}

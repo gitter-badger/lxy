@@ -11,16 +11,11 @@ import (
 	util "sequtil"
 
 	"github.com/golang/glog"
-
 )
 
 var scores int
 
-/*
-e.g.
-gb build lxy; lxy phase infer --links data/test.var.links --output data/test.var.out
-*/
-
+// Phase infers a haplotype phasing from a set of variant links
 func Phase(links *util.Links) {
 
 	if (*links).Size() <= 0 {
@@ -30,9 +25,9 @@ func Phase(links *util.Links) {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	m := ga.NewMultiMutator()
-	//inv := new(HaplotypeInversionMutator)
+	inv := new(GAInvertMutator)
 	msw := new(ga.GASwitchMutator)
-	//m.Add(inv)
+	m.Add(inv)
 	m.Add(msw)
 
 	param := ga.GAParameter{
@@ -43,7 +38,6 @@ func Phase(links *util.Links) {
 		PMutate:     0.7,
 		PBreed:      0.7}
 
-	//gao := ga.NewGA(param)
 	gao := ga.NewGAParallel(param, 7)
 
 	genome := NewFixedBitstringGenome(make([]bool, (*links).Size()), score)
@@ -70,12 +64,21 @@ func Phase(links *util.Links) {
 		}
 
 	}
+
 	glog.Infof("Finished optimization")
 	fmt.Printf("Calls to score = %d\n", scores)
 	best := gao.Best().(*GAFixedBitstringGenome)
 	fmt.Println(best)
+
 }
 
+
+// readPhasing reads a phasing solution from disk and returns an array of booleans corresponding
+// to the phase of variants.
+//
+// readPhasing will return an error if a filesystem path is provided which does not exist on
+// the system. Furthermore, since readPhasing is currently designed only for diploids, an 
+// error will be returned if a value is found in the phasing other than 0 or 1.
 func readPhasing(path string) ([]bool, error) {
 	
 	pf, err := os.Open(path)
@@ -110,5 +113,61 @@ func writePhasing(phasing []bool) {
 
 }
 
+
+// score determine the quality score of a haplotype phasing as
+// represented in a GAFixedBitstringGenome object.
+func score(g *GAFixedBitstringGenome) float64 {
+
+	scores++
+	total := 0.0
+	for i, c := range g.Gene {
+
+		if (i + 1) < (*g.data).Size() {
+			c2 := g.Gene[i+1]
+			if c != c2 {
+				val, _ := (*g.data).Get(i, (i+1))
+				total -= val
+			} else {
+				val, _ := (*g.data).Get(i, (i+1))
+				total += val
+			}
+		}
+		if (i - 1) > 0 {
+			c2 := g.Gene[i-1]
+			if c != c2 {
+				val, _ := (*g.data).Get(i, (i-1))
+				total -= val
+			} else {
+				val, _ := (*g.data).Get(i, (i-1))
+				total += val
+			}
+		}
+
+	}
+
+	return float64(-total)
+}
+
+// EvalPhasing evaluates the quality of a phasing solution relative to a known
+// correct phasing.
+func EvalPhasing(phasing, key []bool) (float64, error) {
+
+	matches := 0.0
+	comparisons := 0.0
+
+	for i, _ := range phasing {
+		for j, _ := range phasing {
+			comparisons += 1
+			pmatch := (phasing[i] == phasing[j])
+			kmatch := (key[i] == key[j])
+			if (pmatch && kmatch) || (!pmatch && !kmatch) {
+				matches += 1
+			}
+		}
+	}
+
+	return float64(matches/comparisons), nil
+
+}
 
 
