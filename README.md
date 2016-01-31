@@ -79,7 +79,7 @@ TODO, planning to include browser shot here that shows tracks generated showing 
 
 ## License
 
-lxy is released under the MIT License. See [LICENSE](https://github.com/cb01/lxy/blob/master/LICENSE).
+lxy is released under the BSD License. See [LICENSE](https://github.com/cb01/lxy/blob/master/LICENSE).
 
 
 
