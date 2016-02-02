@@ -1,6 +1,6 @@
 {
    "kind": "Service",
-   "apiVersion": "v1alpha",
+   "apiVersion": "v1",
    "metadata": {
       "name": "lxy",
       "labels": {

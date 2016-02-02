@@ -71,6 +71,6 @@ deploy:
       username: $KUBERNETES_USERNAME
       password: $KUBERNETES_PASSWORD
       insecure-skip-tls-verify: true
-      command: rolling-update lxy
+      command: rolling-update lxy-controller
       image: quay.io/chris_w_beitel/lxy:$WERCKER_GIT_COMMIT
 
